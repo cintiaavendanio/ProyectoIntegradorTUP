@@ -9,17 +9,16 @@ struct alumno
 
 struct alumno lista_alumnos[10];
 
-int dni_ingresado;
-int nota_ingresada;
-int cant_alumnos = 2;
+int dni_ingresado, valido, nueva_nota, dni, nota;
+int cant_alumnos = 10;
 int bandera = 0;
-int validacion;
-int nueva_nota;
 
-void cargarDatos();
+void cargarAlumno();
 void buscarAlumno();
-void modificarAlumnos();
+void modificarNota();
 void mostrarAlumnos();
+int validarDni();
+int validarNota();
 
 void main()
 {
@@ -35,26 +34,23 @@ void main()
         printf("5-Salir \n");
         scanf("%i", &opcion);
 
-        if (opcion != 5)
+        switch (opcion)
         {
-            switch (opcion)
-            {
-            case 1: // carga de datos
-                cargarDatos();
-                break;
+        case 1: // carga de datos
+            cargarAlumno();
+            break;
 
-            case 2: // búsqueda
-                buscarAlumno();
-                break;
+        case 2: // búsqueda
+            buscarAlumno();
+            break;
 
-            case 3: // modificación de notas de alumnos
-                modificarAlumnos();
-                break;
+        case 3: // modificación de notas de alumnos
+            modificarNota();
+            break;
 
-            case 4: // listado de alumnos
-                mostrarAlumnos();
-                break;
-            }
+        case 4: // listado de alumnos
+            mostrarAlumnos();
+            break;
         }
 
     } while (opcion != 5);
@@ -62,32 +58,62 @@ void main()
     system("pause");
 }
 
-void cargarDatos()
+void cargarAlumno()
 {
     printf("Ingrese datos de los alumnos \n");
+    printf("\n");
     for (int i = 0; i < cant_alumnos; i++)
     {
         do
         {
-            printf("DNI: \n");
-            scanf("%i", &lista_alumnos[i].dni);
-            if (lista_alumnos[i].dni < 1000000 || lista_alumnos[i].dni > 99999999)
+            printf("DNI del alumno: %i \n", i + 1);
+            scanf("%i", &dni);
+            valido = validarDni(dni);
+            if (valido == 1)
+            {
+                lista_alumnos[i].dni = dni;
+            }
+            else
             {
                 printf("ERROR: no ingres%c un dni valido\n", 162);
             }
-
-        } while (lista_alumnos[i].dni < 1000000 || lista_alumnos[i].dni > 99999999);
+        } while (valido == 0);
 
         do
         {
             printf("Nota: \n");
-            scanf("%i", &lista_alumnos[i].nota);
-            if (lista_alumnos[i].nota < 1 || lista_alumnos[i].nota > 10)
+            scanf("%i", &nota);
+            valido = validarNota(nota);
+            if (valido == 1)
+            {
+                lista_alumnos[i].nota = nota;
+            }
+            else
             {
                 printf("ERROR: no ingres%c una nota valida\n", 162);
             }
-        } while (lista_alumnos[i].nota < 1 || lista_alumnos[i].nota > 10);
+        } while (valido == 0);
+
+        printf("\n");
     }
+}
+
+int validarDni(int dni)
+{
+    if (dni >= 1000000 && dni <= 99999999)
+    {
+        return 1;
+    }
+    return 0;
+}
+
+int validarNota(int nota)
+{
+    if (nota >= 1 && nota <= 10)
+    {
+        return 1;
+    }
+    return 0;
 }
 
 void buscarAlumno()
@@ -115,14 +141,16 @@ void buscarAlumno()
     }
     else
     {
-        printf("no se encontr%c un alumno con ese DNI \n", 162);
+        printf("No se encontr%c un alumno con el DNI: %i \n", 162, dni_ingresado);
     }
 }
-void modificarAlumnos()
+
+void modificarNota()
 {
     printf("ingrese DNI del alumno del cual desea modificar la nota\n");
     scanf("%i", &dni_ingresado);
     int i = 0;
+    bandera = 0;
     do
     {
         if (dni_ingresado == lista_alumnos[i].dni)
@@ -137,17 +165,28 @@ void modificarAlumnos()
 
     if (bandera == 1)
     {
-        printf("Ingrese la nueva nota \n");
-        scanf("%i", &nueva_nota);
+        printf("El alumno con DNI %i tiene nota: %i \n", lista_alumnos[i].dni, lista_alumnos[i].nota);
+        do
+        {
+            printf("Ingrese la nueva nota\n");
+            scanf("%i", &nueva_nota);
+            valido = validarNota(nueva_nota);
+            if (valido == 0)
+            {
+                printf("ERROR: no ingres%c una nota valida\n", 162);
+            }
+        } while (valido == 0);
+
         lista_alumnos[i].nota = nueva_nota;
 
-        printf("DNI: %i \t nota: %i \n", lista_alumnos[i].dni, lista_alumnos[i].nota);
+        printf("DNI: %i \t nueva nota: %i \n", lista_alumnos[i].dni, lista_alumnos[i].nota);
     }
     else
     {
         printf("No se encontr%c un alumno con ese DNI \n", 162);
     }
 }
+
 void mostrarAlumnos()
 {
     printf("Lista de alumnos \n");
